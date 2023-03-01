@@ -94,6 +94,7 @@ const SignUp = () => {
         />
       </div>
       <button type="submit">Sign Up</button>
+      <button type ="next"> Sign Up</button>
     </form>
   );
 };
