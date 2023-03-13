@@ -107,3 +107,155 @@ const LoginSignUpPage = () => (
 );
 
 export default LoginSignUpPage;
+
+function NotificationButton() {
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+
+  function requestNotificationPermission() {
+    Notification.requestPermission().then(permission => {
+      setNotificationPermission(permission);
+    });
+  }
+
+  function createNotification() {
+    if (notificationPermission === "granted") {
+      new Notification("Travel app notifications!");
+    }
+  }
+
+  return (
+    <>
+      {notificationPermission === "default" && (
+        <button onClick={requestNotificationPermission}>
+          Enable Notifications
+        </button>
+      )}
+      {notificationPermission === "granted" && (
+        <button onClick={createNotification}>
+          Create Notification
+        </button>
+      )}
+    </>
+  );
+}
+
+export default NotificationButton;
+
+function ShareButton() {
+  const handleShareClick = async () => {
+    try {
+      // check if the Web Share API is available
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Trip',
+          text: 'Check out my trip!',
+          url: 'https://example.com/trip',
+        });
+      } else {
+        // fallback to other sharing options
+        const shareUrl = 'https://example.com/trip';
+        const shareTitle = 'My Trip';
+        const shareText = 'Check out my trip!';
+        const mailtoUrl = `mailto:?subject=${shareTitle}&body=${shareText}%0D%0A%0D%0A${shareUrl}`;
+        const messageUrl = `sms:?body=${shareText}%0D%0A%0D%0A${shareUrl}`;
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        
+        // open a share dialog with multiple options
+        window.open(mailtoUrl);
+        window.open(messageUrl);
+        window.open(facebookUrl);
+        window.open(twitterUrl);
+      }
+    } catch (error) {
+      console.error('Error sharing trip:', error);
+    }
+  };
+
+  return (
+    <button onClick={handleShareClick}>
+      Share Trip
+    </button>
+  );
+}
+
+const BookFlights = () => {
+  const [flights, setFlights] = useState([]);
+
+  const searchFlights = () => {
+    fetch('https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/SFO-sky/JFK-sky/2022-11-01', {
+      headers: {
+        'x-rapidapi-host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com',
+        'x-rapidapi-key': 'YOUR_API_KEY',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setFlights(data.Quotes))
+    .catch(error => console.log(error));
+  };
+
+  return (
+    <div>
+      <button onClick={searchFlights}>Search Flights</button>
+      {flights.map(flight => (
+        <div key={flight.QuoteId}>
+          <p>Price: {flight.MinPrice}</p>
+          <p>Carrier: {flight.OutboundLeg.CarrierIds[0]}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default BookFlights;
+
+
+
+//Booking hotel using expedia
+
+import React, { useState } from 'react';
+
+const BookHotel = () => {
+  const [hotels, setHotels] = useState([]);
+  const [location, setLocation] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+
+  const searchHotels = () => {
+    const url = `https://hotels-com-free.p.rapidapi.com/srle/listing/v1/brands/hotels.com?locale=en_US&currency=USD&sort=POPULARITY&destinationId=${location}&pageNumber=1&checkIn=${checkInDate}&checkOut=${checkOutDate}&pageSize=25`;
+
+    fetch(url, {
+      headers: {
+        'x-rapidapi-host': 'hotels-com-free.p.rapidapi.com',
+        'x-rapidapi-key': 'YOUR_API_KEY',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setHotels(data.data.body.searchResults.results))
+    .catch(error => console.log(error));
+  };
+
+  return (
+    <div>
+      <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Enter location" />
+      <input type="date" value={checkInDate} onChange={(e) => setCheckInDate(e.target.value)} />
+      <input type="date" value={checkOutDate} onChange={(e) => setCheckOutDate(e.target.value)} />
+      <button onClick={searchHotels}>Search Hotels</button>
+      {hotels.map(hotel => (
+        <div key={hotel.id}>
+          <p>{hotel.name}</p>
+          <p>{hotel.ratePlan.price.current}</p>
+          <button onClick={() => bookHotel(hotel)}>Book Now</button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default BookHotel;
+
+
+
+
+
+
