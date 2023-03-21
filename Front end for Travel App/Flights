@@ -1,0 +1,33 @@
+import React, { useState } from 'react';
+const BookFlights = () => {
+  const [flights, setFlights] = useState([]);
+
+  const searchFlights = () => {
+    fetch('https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browsequotes/v1.0/US/USD/en-US/SFO-sky/JFK-sky/2022-11-01', {
+      headers: {
+        'x-rapidapi-host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com',
+        'x-rapidapi-key': 'YOUR_API_KEY',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setFlights(data.Quotes))
+    .catch(error => console.log(error));
+  };
+
+  return (
+    <div>
+      <button onClick={searchFlights}>Search Flights</button>
+      {flights.map(flight => (
+        <div key={flight.QuoteId}>
+          <p>Price: {flight.MinPrice}</p>
+          <p>Carrier: {flight.OutboundLeg.CarrierIds[0]}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default BookFlights;
+
+
+

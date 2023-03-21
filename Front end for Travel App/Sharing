@@ -1,0 +1,71 @@
+
+function NotificationButton() {
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+
+  function requestNotificationPermission() {
+    Notification.requestPermission().then(permission => {
+      setNotificationPermission(permission);
+    });
+  }
+
+  function createNotification() {
+    if (notificationPermission === "granted") {
+      new Notification("Travel app notifications!");
+    }
+  }
+
+  return (
+    <>
+      {notificationPermission === "default" && (
+        <button onClick={requestNotificationPermission}>
+          Enable Notifications
+        </button>
+      )}
+      {notificationPermission === "granted" && (
+        <button onClick={createNotification}>
+          Create Notification
+        </button>
+      )}
+    </>
+  );
+}
+
+export default NotificationButton;
+
+function ShareButton() {
+  const handleShareClick = async () => {
+    try {
+      // check if the Web Share API is available
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Trip',
+          text: 'Check out my trip!',
+          url: 'https://example.com/trip',
+        });
+      } else {
+        // fallback to other sharing options
+        const shareUrl = 'https://example.com/trip';
+        const shareTitle = 'My Trip';
+        const shareText = 'Check out my trip!';
+        const mailtoUrl = `mailto:?subject=${shareTitle}&body=${shareText}%0D%0A%0D%0A${shareUrl}`;
+        const messageUrl = `sms:?body=${shareText}%0D%0A%0D%0A${shareUrl}`;
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        
+        // open a share dialog with multiple options
+        window.open(mailtoUrl);
+        window.open(messageUrl);
+        window.open(facebookUrl);
+        window.open(twitterUrl);
+      }
+    } catch (error) {
+      console.error('Error sharing trip:', error);
+    }
+  };
+
+  return (
+    <button onClick={handleShareClick}>
+      Share Trip
+    </button>
+  );
+}
