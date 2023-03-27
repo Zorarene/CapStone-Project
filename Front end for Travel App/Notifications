@@ -1,0 +1,35 @@
+import React, { useState } from "react";
+//notifications
+
+function NotificationButton() {
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+
+  function requestNotificationPermission() {
+    Notification.requestPermission().then(permission => {
+      setNotificationPermission(permission);
+    });
+  }
+
+  function createNotification() {
+    if (notificationPermission === "granted") {
+      new Notification("Travel app notifications!");
+    }
+  }
+
+  return (
+    <>
+      {notificationPermission === "default" && (
+        <button onClick={requestNotificationPermission}>
+          Enable Notifications
+        </button>
+      )}
+      {notificationPermission === "granted" && (
+        <button onClick={createNotification}>
+          Create Notification
+        </button>
+      )}
+    </>
+  );
+}
+
+export default NotificationButton;
