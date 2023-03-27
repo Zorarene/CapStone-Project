@@ -1,0 +1,42 @@
+import { useState } from 'react';
+
+function InterestQuestionnaire() {
+  const [where, setWhere] = useState('');
+  const [when, setWhen] = useState('');
+  const [numPeople, setNumPeople] = useState(0);
+  const [interests, setInterests] = useState({
+    nature: false,
+    water: false,
+    adventure: false,
+    relaxing: false,
+    sightseeing: false,
+    art: false,
+    historical: false,
+  });
+
+  function handleInterestChange(event) {
+    const interest = event.target.name;
+    const checked = event.target.checked;
+    setInterests((prevInterests) => ({
+      ...prevInterests,
+      [interest]: checked,
+    }));
+  }
+  function handleSubmit(event) {
+    event.preventDefault();
+    // do something with the questionnaire results, e.g. send to server
+    console.log({ where, when, numPeople, interests });
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Where:
+        <input type="text" value={where} onChange={(e) => setWhere(e.target.value)} />
+      </label>
+      <label>
+        When:
+        <input type="text" value={when} onChange={(e) => setWhen(e.target.value)} />
+      </label>
+      <label>
+
