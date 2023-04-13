@@ -1,0 +1,43 @@
+import React, { useState } from 'react';
+
+const BookHotel = () => {
+  const [hotels, setHotels] = useState([]);
+  const [location, setLocation] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
+  const bookHotel = (hotel) =>{
+    // handle booking logic headersconsole.loh('Booking hotel ${hotel.name}...');
+  };
+
+  const searchHotels = () => {
+    const url = `https://hotels-com-free.p.rapidapi.com/srle/listing/v1/brands/hotels.com?locale=en_US&currency=USD&sort=POPULARITY&destinationId=${location}&pageNumber=1&checkIn=${checkInDate}&checkOut=${checkOutDate}&pageSize=25`;
+
+    fetch(url, {
+      headers: {
+        'x-rapidapi-host': 'hotels-com-free.p.rapidapi.com',
+        'x-rapidapi-key': 'YOUR_API_KEY',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setHotels(data.data.body.searchResults.results))
+    .catch(error => console.log(error));
+  };
+
+  return (
+    <div>
+      <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Enter location" />
+      <input type="date" value={checkInDate} onChange={(e) => setCheckInDate(e.target.value)} />
+      <input type="date" value={checkOutDate} onChange={(e) => setCheckOutDate(e.target.value)} />
+      <button onClick={searchHotels}>Search Hotels</button>
+      {hotels.map(hotel => (
+        <div key={hotel.id}>
+          <p>{hotel.name}</p>
+          <p>{hotel.ratePlan.price.current}</p>
+          <button onClick={() => bookHotel(hotel)}>Book Now</button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default BookHotel;
